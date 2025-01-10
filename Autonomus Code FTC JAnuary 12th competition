@@ -1,0 +1,102 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+
+@Autonomous(name = "_2024_25_robot_main (Blocks to Java)")
+public class _2024_25_robot_main extends LinearOpMode {
+
+  private Servo leftclaw;
+  private Servo rightclaw;
+  private DcMotor Arm;
+  private DcMotor Escalator;
+  private DcMotor leftback;
+  private DcMotor rightback;
+  private DcMotor rightfront;
+  private DcMotor leftfront;
+
+  /**
+   * This function is executed when this OpMode is selected from the Driver Station.
+   */
+  @Override
+  public void runOpMode() {
+    double rightFront;
+    float strafe;
+    float power;
+    float turn;
+    float armdown;
+    float armup;
+    boolean scaleup;
+    boolean scaledown;
+    double leftBack;
+    double rightBack;
+    double leftFront;
+    double armuppy;
+    double escalatoruppy;
+
+    leftclaw = hardwareMap.get(Servo.class, "leftclaw");
+    rightclaw = hardwareMap.get(Servo.class, "rightclaw");
+    Arm = hardwareMap.get(DcMotor.class, "Arm");
+    Escalator = hardwareMap.get(DcMotor.class, "Escalator");
+    leftback = hardwareMap.get(DcMotor.class, "left back");
+    rightback = hardwareMap.get(DcMotor.class, "right back");
+    rightfront = hardwareMap.get(DcMotor.class, "right front");
+    leftfront = hardwareMap.get(DcMotor.class, "left front");
+
+    // Put initialization blocks here.
+    waitForStart();
+    if (opModeIsActive()) {
+      // Put run blocks here.
+      while (opModeIsActive()) {
+        // Gamepad Configuration
+        strafe = gamepad1.right_stick_x;
+        power = gamepad1.right_stick_y;
+        turn = gamepad1.left_stick_x;
+        armdown = gamepad1.left_trigger;
+        armup = gamepad1.right_trigger;
+        scaleup = gamepad1.dpad_up;
+        scaledown = gamepad1.dpad_down;
+        // Intake System
+        if (gamepad1.dpad_right) {
+          // grabs sample
+          leftclaw.setPosition(1);
+          rightclaw.setPosition(0);
+        } else if (gamepad1.dpad_left) {
+          // puts sample down
+          leftclaw.setPosition(0);
+          rightclaw.setPosition(1);
+        }
+        // drivetrain
+        leftBack = ((power - strafe) + turn) * 0.4;
+        rightBack = ((power - strafe) - turn) * -0.4;
+        leftFront = (power + strafe + turn) * 0.4;
+        rightFront = ((power + strafe) - turn) * -0.4;
+        // arm angle
+        Arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        if (armup) {
+          Arm.setTargetPosition(90);
+        }
+        if (armdown) {
+          Arm.setTargetPosition(0);
+        }
+        // extend viper slides
+        if (scaledown) {
+          Escalator.setDirection(DcMotor.Direction.REVERSE);
+          Escalator.setPower(1);
+        } else if (scaleup) {
+          Escalator.setDirection(DcMotor.Direction.FORWARD);
+          Escalator.setPower(1);
+        }
+        // direct power
+        leftback.setPower(leftBack);
+        rightback.setPower(rightBack);
+        rightfront.setPower(rightFront);
+        leftfront.setPower(leftFront);
+        Arm.setPower(armuppy);
+        Escalator.setPower(escalatoruppy);
+      }
+    }
+  }
+}
